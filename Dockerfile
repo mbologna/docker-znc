@@ -10,7 +10,7 @@ ENV GPG_KEY D5823CACB477191CAC0075555AE420CC0209989E
 ARG CMAKEFLAGS="-DCMAKE_INSTALL_PREFIX=/opt/znc -DWANT_CYRUS=YES -DWANT_PERL=YES -DWANT_PYTHON=YES -DWANT_IPV6=YES"
 ARG MAKEFLAGS=""
 
-ENV ZNC_VERSION 1.7.0
+ENV ZNC_VERSION 1.7.1
 
 RUN set -x \
     && adduser -S znc \
@@ -40,7 +40,7 @@ RUN set -x \
     && curl -fsSL "https://znc.in/releases/archive/znc-${ZNC_VERSION}.tar.gz" -o znc.tgz \
     && curl -fsSL "https://znc.in/releases/archive/znc-${ZNC_VERSION}.tar.gz.sig" -o znc.tgz.sig \
     && export GNUPGHOME="$(mktemp -d)" \
-    && gpg --keyserver eu.pool.sks-keyservers.net --recv-keys "${GPG_KEY}" \
+    && gpg --keyserver pool.sks-keyservers.net --recv-keys "${GPG_KEY}" \
     && gpg --batch --verify znc.tgz.sig znc.tgz \
     && rm -rf "$GNUPGHOME" \
     && tar -zxf znc.tgz --strip-components=1 \
