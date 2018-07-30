@@ -35,12 +35,12 @@ RUN set -x \
         libressl-dev \
         perl-dev \
         python3-dev \
-    && apk add --no-cache mailx postfix \
+    && apk add --no-cache mailx ssmtp \
     && mkdir /znc-src && cd /znc-src \
     && curl -fsSL "https://znc.in/releases/archive/znc-${ZNC_VERSION}.tar.gz" -o znc.tgz \
     && curl -fsSL "https://znc.in/releases/archive/znc-${ZNC_VERSION}.tar.gz.sig" -o znc.tgz.sig \
     && export GNUPGHOME="$(mktemp -d)" \
-    && gpg --keyserver pool.sks-keyservers.net --recv-keys "${GPG_KEY}" \
+    && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-keys "${GPG_KEY}" \
     && gpg --batch --verify znc.tgz.sig znc.tgz \
     && rm -rf "$GNUPGHOME" \
     && tar -zxf znc.tgz --strip-components=1 \
@@ -50,6 +50,7 @@ RUN set -x \
     && make install \
     && cd / && rm -rf /znc-src
 
+COPY ssmtp.conf /etc/ssmtp/ssmtp.conf
 COPY entrypoint.sh /
 COPY 00-try-sh.sh /startup-sequence/
 COPY 01-options.sh /startup-sequence/
