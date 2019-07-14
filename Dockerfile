@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.10
 LABEL maintainer="Michele Bologna <mb@michelebologna.net>"
 
 ENV GPG_KEY D5823CACB477191CAC0075555AE420CC0209989E
