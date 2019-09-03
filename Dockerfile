@@ -27,7 +27,6 @@ RUN set -x \
         tzdata \
     && apk add --no-cache --virtual build-dependencies \
         boost-dev \
-        curl-dev \
         cyrus-sasl-dev \
         gettext \
         gnupg \
@@ -46,12 +45,6 @@ RUN set -x \
     && gpg --batch --verify znc.tgz.sig znc.tgz \
     && rm -rf "$GNUPGHOME" \
     && tar -zxf znc.tgz --strip-components=1 \
-    && curl -o znc-push.tar.gz -L https://github.com/jreese/znc-push/archive/master.tar.gz \
-    && tar xf znc-push.tar.gz -C modules --strip-components=1 \
-    && cd modules/ \
-    && curl -fssL https://raw.githubusercontent.com/mbologna/docker-znc/master/enable_libcurl.patch -o enable_libcurl.patch \
-    && patch -p0 < enable_libcurl.patch \
-    && cd .. \
     && mkdir build && cd build \
     && cmake .. ${CMAKEFLAGS} \
     && make $MAKEFLAGS \
