@@ -25,6 +25,7 @@ RUN set -x \
         su-exec \
         tini \
         tzdata \
+        py3-psycopg2 \
     && apk add --no-cache --virtual build-dependencies \
         boost-dev \
         cyrus-sasl-dev \
