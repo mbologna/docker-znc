@@ -8,7 +8,7 @@ ENV GPG_KEY D5823CACB477191CAC0075555AE420CC0209989E
 
 # musl silently doesn't support AI_ADDRCONFIG yet, and ZNC doesn't support Happy Eyeballs yet.
 # Together they cause very slow connection. So for now IPv6 is disabled here.
-ARG CMAKEFLAGS="-DCMAKE_INSTALL_PREFIX=/opt/znc -DWANT_CYRUS=YES -DWANT_PERL=YES -DWANT_PYTHON=YES -DWANT_IPV6=YES"
+ARG CMAKEFLAGS="-DCMAKE_INSTALL_PREFIX=/opt/znc -DWANT_CYRUS=YES -DWANT_PERL=NO -DWANT_PYTHON=YES -DWANT_IPV6=YES"
 ARG MAKEFLAGS=""
 
 ENV ZNC_VERSION 1.7.4
@@ -19,6 +19,7 @@ RUN set -x \
     && apk add --no-cache --virtual runtime-dependencies \
         boost \
         ca-certificates \
+        curl \
         cyrus-sasl \
         icu \
         su-exec \
@@ -26,17 +27,17 @@ RUN set -x \
         tzdata \
     && apk add --no-cache --virtual build-dependencies \
         boost-dev \
-        build-base \
-        cmake \
-        curl \
+        curl-dev \
         cyrus-sasl-dev \
         gettext \
         gnupg \
+        perl-dev \
+    && apk add --no-cache --virtual modules-builder-dependencies \
+        build-base \
+        cmake \
         icu-dev \
         libressl-dev \
-        perl-dev \
         python3-dev \
-    && apk add --no-cache mailx ssmtp \
     && mkdir /znc-src && cd /znc-src \
     && curl -fsSL "https://znc.in/releases/archive/znc-${ZNC_VERSION}.tar.gz" -o znc.tgz \
     && curl -fsSL "https://znc.in/releases/archive/znc-${ZNC_VERSION}.tar.gz.sig" -o znc.tgz.sig \
@@ -45,13 +46,19 @@ RUN set -x \
     && gpg --batch --verify znc.tgz.sig znc.tgz \
     && rm -rf "$GNUPGHOME" \
     && tar -zxf znc.tgz --strip-components=1 \
+    && curl -o znc-push.tar.gz -L https://github.com/jreese/znc-push/archive/master.tar.gz \
+    && tar xf znc-push.tar.gz -C modules --strip-components=1 \
+    && cd modules/ \
+    && curl -fssL https://raw.githubusercontent.com/mbologna/docker-znc/master/enable_libcurl.patch -o enable_libcurl.patch \
+    && patch -p0 < enable_libcurl.patch \
+    && cd .. \
     && mkdir build && cd build \
     && cmake .. ${CMAKEFLAGS} \
     && make $MAKEFLAGS \
     && make install \
+    && apk del build-dependencies \
     && cd / && rm -rf /znc-src
 
-COPY ssmtp.conf /etc/ssmtp/ssmtp.conf
 COPY entrypoint.sh /
 COPY 00-try-sh.sh /startup-sequence/
 COPY 01-options.sh /startup-sequence/

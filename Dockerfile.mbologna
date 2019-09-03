@@ -1,2 +1,0 @@
-FROM mbologna/docker-znc
-COPY ssmtp.conf /etc/ssmtp/ssmtp.conf

@@ -1,0 +1,10 @@
+--- push.cpp	2019-09-03 17:28:27.254952572 +0200
++++ push.cpp	2019-09-03 17:28:43.818965650 +0200
+@@ -23,6 +23,7 @@
+ #include "time.h"
+ #include <string.h>
+ 
++#define USE_CURL 0
+ #ifdef USE_CURL
+ #include <curl/curl.h>
+ #endif // USE_CURL
