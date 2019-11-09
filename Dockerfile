@@ -22,6 +22,7 @@ RUN set -x \
         curl \
         cyrus-sasl \
         icu \
+	libressl \
         su-exec \
         tini \
         tzdata \
